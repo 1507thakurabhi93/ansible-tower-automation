@@ -1,0 +1,90 @@
+---
+- name: Play to prepare tower for windows demo
+  hosts: localhost
+  vars:
+    tower_url: tower1.{{guid}}.example.opentlc.com
+    tower_pass: "{{tower_password}}"
+    git_url: https://github.com/miteshget/windows-automation.git
+
+  tasks:
+    - name: create win project
+      tower_project:
+        name: win_Project
+        description: "win_Project"
+        organization: Default
+        state: present
+        scm_url:  "{{ git_url }}"
+        scm_type: git
+        tower_host: "{{ tower_url }}"  
+        tower_username: admin
+        tower_password: "{{tower_pass}}"
+        tower_verify_ssl: false
+
+    - name: Create tower win inventory
+      tower_inventory:
+        name: win_Inventory
+        description: win
+        organization: Default
+        state: present
+        tower_host: "{{ tower_url }}"  
+        tower_username: admin
+        tower_password: "{{tower_pass}}"
+        tower_verify_ssl: false
+ 
+    - name: Tower host win credential
+      tower_credential:
+        name: "win_Credential"
+        username: "Administrator"
+        password: "jVMijRwLbI02gFCo2xkjlZ9lxEA7bm7zgg=="
+        description:        win
+        organization:       Default
+        kind:               ssh
+        state:              present
+        tower_host: "{{ tower_url }}"  
+        tower_username: admin
+        tower_password: "{{tower_pass}}"
+        tower_verify_ssl: false
+
+    - name: Add Hosts to inventory
+      tower_host:
+        name: "{{ item }}"
+        inventory: win_Inventory
+        tower_host: "{{ tower_url }}"  
+        tower_username: admin
+        tower_password: "{{tower_pass}}"
+        tower_verify_ssl: false
+        variables:
+          ansible_connection: winrm
+          ansible_winrm_server_cert_validation: ignore
+          ansible_become: false
+      loop: 
+        - ad1.{{guid}}.internal
+
+
+    - name: Add Groups to inventory
+      tower_group:
+        name: "{{ item }}"
+        inventory: win_Inventory
+        tower_host: "{{ tower_url }}"  
+        tower_username: admin
+        tower_password: "{{tower_pass}}"
+        tower_verify_ssl: false
+      loop: 
+        - windows
+
+
+    - name: Create Job template
+      tower_job_template:
+        name: win_JobTemplate
+        job_type: "run"
+        project: "win_Project"
+        playbook: "playbook.yml"
+        inventory: "win_Inventory"
+        credential: "win_Credential"
+        become_enabled: false
+        tower_host: "{{ tower_url }}"  
+        tower_username: admin
+        tower_password: "{{tower_pass}}"
+        tower_verify_ssl: false
+        # variables:
+        #   GUID: "{{guid}}"

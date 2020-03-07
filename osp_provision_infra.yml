@@ -1,0 +1,44 @@
+---
+- name: Play to prepare tower for osp provision infra demo
+  hosts: localhost
+  vars:
+    tower_url: tower1.{{guid}}.example.opentlc.com
+    tower_pass: "{{tower_password}}"
+    git_url: https://github.com/miteshget/openstack-resource-automation.git
+
+  tasks:
+    - name: create OSP project
+      tower_project:
+        name: OSP_Project
+        description: "OSP_Project"
+        organization: Default
+        state: present
+        scm_url:  "{{ git_url }}"
+        scm_type: git
+        tower_host: "{{ tower_url }}"  
+        tower_username: admin
+        tower_password: "{{tower_pass}}"
+        tower_verify_ssl: false
+
+    - name: Create tower OSP inventory
+      tower_inventory:
+        name: OSP_empty_inventory
+        description: OSP
+        organization: Default
+        state: present
+        tower_host: "{{ tower_url }}"  
+        tower_username: admin
+        tower_password: "{{tower_pass}}"
+        tower_verify_ssl: false
+        
+    - name: Create Job template
+      tower_job_template:
+        name: OSP_Infra_JobTemplate
+        job_type: "run"
+        project: "OSP_Project"
+        playbook: "infra-provision/playbook.yml"
+        inventory: "OSP_empty_inventory"
+        tower_host: "{{ tower_url }}"  
+        tower_username: admin
+        tower_password: "{{tower_pass}}"
+        tower_verify_ssl: false

@@ -1,0 +1,86 @@
+---
+- name: Play to prepare tower for three tier app demo
+  hosts: localhost
+  vars:
+    tower_url: tower1.{{guid}}.example.opentlc.com
+    tower_pass: "{{tower_password}}"
+    git_url: https://github.com/miteshget/multi-tier-application.git
+
+  tasks:
+    - name: create 3TierApp project
+      tower_project:
+        name: 3TierApp_Project
+        description: "3TierApp_Project"
+        organization: Default
+        state: present
+        scm_url:  "{{ git_url }}"
+        scm_type: git
+        tower_host: "{{ tower_url }}"  
+        tower_username: admin
+        tower_password: "{{tower_pass}}"
+        tower_verify_ssl: false
+
+    - name: Create tower 3TierApp inventory
+      tower_inventory:
+        name: 3TierApp_Inventory
+        description: 3TierApp
+        organization: Default
+        state: present
+        tower_host: "{{ tower_url }}"  
+        tower_username: admin
+        tower_password: "{{tower_pass}}"
+        tower_verify_ssl: false
+ 
+    - name: Tower host 3TierApp credential
+      tower_credential:
+        name:               3TierApp_Credential
+        username:           ec2-user
+        description:        3TierApp
+        organization:       Default
+        kind:               ssh
+        state:              present
+        tower_host: "{{ tower_url }}"  
+        tower_username: admin
+        tower_password: "{{tower_pass}}"
+        tower_verify_ssl: false
+
+    - name: Add Hosts to inventory
+      tower_host:
+        name: "{{ item }}"
+        inventory: 3TierApp_Inventory
+        tower_host: "{{ tower_url }}"  
+        tower_username: admin
+        tower_password: "{{tower_pass}}"
+        tower_verify_ssl: false
+      loop: 
+        - frontend1.{{app_guid}}.internal
+        - app1.{{app_guid}}.internal
+        - app2.{{app_guid}}.internal
+        - appdb1.{{app_guid}}.internal
+
+    - name: Add Groups to inventory
+      tower_group:
+        name: "{{ item }}"
+        inventory: 3TierApp_Inventory
+        tower_host: "{{ tower_url }}"  
+        tower_username: admin
+        tower_password: "{{tower_pass}}"
+        tower_verify_ssl: false
+      loop: 
+        - frontends
+        - apps
+        - appdbs
+
+    - name: Create Job template
+      tower_job_template:
+        name: 3TierApp_JobTemplate
+        job_type: "run"
+        project: "3TierApp_Project"
+        playbook: "main.yml"
+        inventory: "3TierApp_Inventory"
+        credential: 3TierApp_Credential
+        become_enabled: true
+        tower_host: "{{ tower_url }}"  
+        tower_username: admin
+        tower_password: "{{tower_pass}}"
+        tower_verify_ssl: false
