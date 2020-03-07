@@ -44,32 +44,47 @@
         tower_password: "{{tower_pass}}"
         tower_verify_ssl: false
 
-    - name: Add Hosts to inventory
-      tower_host:
-        name: "{{ item }}"
-        inventory: 3TierApp_Inventory
-        tower_host: "{{ tower_url }}"  
-        tower_username: admin
-        tower_password: "{{tower_pass}}"
-        tower_verify_ssl: false
-      loop: 
-        - frontend1.{{app_guid}}.internal
-        - app1.{{app_guid}}.internal
-        - app2.{{app_guid}}.internal
-        - appdb1.{{app_guid}}.internal
+    # - name: Add Hosts to inventory
+    #   tower_host:
+    #     name: "{{ item }}"
+    #     inventory: 3TierApp_Inventory
+    #     tower_host: "{{ tower_url }}"  
+    #     tower_username: admin
+    #     tower_password: "{{tower_pass}}"
+    #     tower_verify_ssl: false
+    #   loop: 
+    #     - frontend1.{{app_guid}}.internal
+    #     - app1.{{app_guid}}.internal
+    #     - app2.{{app_guid}}.internal
+    #     - appdb1.{{app_guid}}.internal
 
-    - name: Add Groups to inventory
-      tower_group:
-        name: "{{ item }}"
-        inventory: 3TierApp_Inventory
+    # - name: Add Groups to inventory
+    #   tower_group:
+    #     name: "{{ item }}"
+    #     inventory: 3TierApp_Inventory
+    #     tower_host: "{{ tower_url }}"  
+    #     tower_username: admin
+    #     tower_password: "{{tower_pass}}"
+    #     tower_verify_ssl: false
+    #   loop: 
+    #     - frontends
+    #     - apps
+    #     - appdbs
+
+    - name: Add source to build dynamic inventory
+      tower_inventory_source:
+        name: "3TierApp_project_hosts"
+        inventory: "3TierApp_Inventory"
+        source: "scm"
+        source_path: "hosts"
+        source_project: "3TierApp_Project"
+        update_on_launch: true
         tower_host: "{{ tower_url }}"  
-        tower_username: admin
+        tower_username: "admin"
         tower_password: "{{tower_pass}}"
         tower_verify_ssl: false
-      loop: 
-        - frontends
-        - apps
-        - appdbs
+
+    
 
     - name: Create Job template
       tower_job_template:
