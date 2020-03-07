@@ -1,0 +1,75 @@
+# ansible-tower-automation
+Playbooks to automate ansible tower
+
+
+== Three Tier App Setup
+
+. Sample Example
++
+[source,text]
+----
+[user@laptop ~]$ ansible-playbook three-tier-app.yml -e guid=<Tower-guid> -e tower_password=<tower-passowrd> -e app_guid=<3TierApp-GUID>
+----
++
+[NOTE]
+====
+    . Update ssh key for Three Tier App internal machines in credential.
+    . Select credential for Job Template in tower console.
+    . Select instance group to run on.
+====
+
+== Windows Setup
+. Sample Example
++
+[source,text]
+----
+[user@laptop ~]$ ansible-playbook windows.yml -e guid=<Tower-guid> -e tower_password=<tower-passowrd>
+----
++
+[NOTE]
+====
+     *  Select credential for Job Template in tower console.
+====
+
+== OSP Setup
+
+. Sample example for infra provisioning 
++
+[source,text]
+----
+[user@laptop ~]$ ansible-playbook osp_provision_infra.yml -e guid=<Tower-guid> -e tower_password=<tower-passowrd> 
+----
++
+[NOTE]
+====
+     *  Select instance group to run on.
+====
+
+. Sample example for instance configuration
++
+[source,text]
+----
+[user@laptop ~]$ ansible-playbook osp_instance_configuration.yml -e guid=<Tower-guid> -e tower_password=<tower-passowrd>
+----
++
+[NOTE]
+====
+    . Select credential for Job Template in tower console.
+    . Select instance group to run on.
+====
+
+== AWS credential Setup
+. Sample Example
++
+[source,text]
+----
+[user@laptop ~]$ ansible-playbook aws_credentials.yml -e guid=<Tower-guid> -e tower_password=<tower-passowrd> --ask-vault-pass
+----
+
+== GitHub PAT credential Setup
+. Sample Example
++
+[source,text]
+----
+[user@laptop ~]$ ansible-playbook github_credentials.yml -e guid=<Tower-guid> -e tower_password=<tower-passowrd> --ask-vault-pass
+----
