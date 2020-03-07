@@ -63,6 +63,8 @@ Playbooks to automate ansible tower
 +
 [source,text]
 ----
+[user@laptop ~]$ echo -n 'your_access_key_in_clear_text' | ansible-vault encrypt_string  --stdin-name 'readonly_access_key'
+[user@laptop ~]$ echo -n 'your_secret_key_in_clear_text' | ansible-vault encrypt_string  --stdin-name 'readonly_secret_key'
 [user@laptop ~]$ ansible-playbook aws_credentials.yml -e guid=<Tower-guid> -e tower_password=<tower-passowrd> --ask-vault-pass
 ----
 
@@ -71,5 +73,6 @@ Playbooks to automate ansible tower
 +
 [source,text]
 ----
+[user@laptop ~]$ echo -n 'your_github_pat_in_clear_text' | ansible-vault encrypt_string  --stdin-name 'github_pat'
 [user@laptop ~]$ ansible-playbook github_credentials.yml -e guid=<Tower-guid> -e tower_password=<tower-passowrd> --ask-vault-pass
 ----
