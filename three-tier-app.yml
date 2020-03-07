@@ -84,8 +84,6 @@
         tower_password: "{{tower_pass}}"
         tower_verify_ssl: false
 
-    
-
     - name: Create Job template
       tower_job_template:
         name: 3TierApp_JobTemplate
@@ -99,3 +97,4 @@
         tower_username: admin
         tower_password: "{{tower_pass}}"
         tower_verify_ssl: false
+        
